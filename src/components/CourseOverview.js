@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import { useCourse } from '@/context/CourseContext';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card.jsx';

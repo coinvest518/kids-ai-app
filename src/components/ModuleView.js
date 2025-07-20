@@ -1,4 +1,4 @@
-// src/components/ModuleView.js
+"use client";
 import React from "react";
 import { useCourse } from "@/context/CourseContext";
 import CourseModule from "./CourseModule";

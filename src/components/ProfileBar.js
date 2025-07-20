@@ -1,4 +1,4 @@
-// src/components/ProfileBar.js
+"use client";
 import React from "react";
 import { useCourse } from "@/context/CourseContext";
 

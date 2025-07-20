@@ -1,4 +1,4 @@
-// src/components/AdventureMap.js
+"use client";
 import React from "react";
 import { useCourse } from "@/context/CourseContext";
 
@@ -25,7 +25,8 @@ export default function AdventureMap({ onSelectModule }) {
             <span className="text-lg font-semibold">Module {mod.id}</span>
             <span className="text-sm mt-2">{mod.title}</span>
             {state.progress >= mod.id && (
-              <span className="mt-2 text-green-600 font-bold">✓ Complete</span>
+              <span className="mt-2 text-green-600 font-bold">
+3 Complete</span>
             )}
           </button>
         ))}
