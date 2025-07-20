@@ -1,6 +1,6 @@
 export const metadata = {
-  title: "Appwrite + Next.js",
-  description: "Appwrite starter for Next.js",
+  title: "Kids Learn AI Business Adventure",
+  description: "An engaging course for kids to learn about entrepreneurship and AI.",
 };
 
 export default function RootLayout({ children }) {
