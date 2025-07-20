@@ -20,11 +20,14 @@ import {
   Star,
   ChevronDown,
   ChevronRight,
+  ChevronLeft,
   Award,
   Zap,
   Clock,
   Users,
 } from "lucide-react";
+
+import AskAIBox from "./AskAIBox";
 
 export default function CourseModule({
   moduleNumber = 1,
@@ -61,12 +64,22 @@ export default function CourseModule({
   xpReward = 100,
   estimatedTime = "45 minutes",
   difficulty = "Beginner",
+  aiContext,
+  onBack,
 }) {
   const [conceptsState, setConceptsState] = useState(keyConcepts);
   const [activitiesState, setActivitiesState] = useState(activities);
   const [challengesState, setChallengesState] = useState(challenges);
   const [isExpanded, setIsExpanded] = useState(true);
   const [showCompletion, setShowCompletion] = useState(false);
+  // Tabs state
+  const tabList = [
+    { value: "content", label: "Content" },
+    { value: "activities", label: "Activities" },
+    { value: "challenges", label: "Challenges" },
+    { value: "resources", label: "Resources" },
+  ];
+  const [activeTab, setActiveTab] = useState("content");
   const { loadingProgress } = useCourse();
 
   const totalItems = conceptsState.length + activitiesState.length + challengesState.length;
@@ -130,9 +143,21 @@ export default function CourseModule({
   }
 
   return (
-    <div className="max-w-4xl mx-auto p-6 space-y-6">
-      {/* Module Header */}
-      <Card className="border-l-4 border-l-blue-500">
+    <div className="w-full max-w-3xl md:max-w-4xl xl:max-w-5xl mx-auto p-2 sm:p-4 md:p-6 space-y-6">
+      {/* In-Module Navigation Bar */}
+      <div className="flex items-center justify-between mb-2">
+        <button
+          onClick={onBack}
+          className="flex items-center gap-1 text-blue-600 hover:text-blue-800 font-medium px-2 py-1 rounded transition focus:outline-none focus:ring"
+          aria-label="Back"
+        >
+          <ChevronLeft className="h-5 w-5" />
+          <span className="hidden sm:inline">Back</span>
+        </button>
+        {/* Optionally, add a profile button here if needed */}
+      </div>
+      {/* Module Header + AI Box */}
+      <Card className="border-l-4 border-l-blue-500 w-full md:w-[600px] xl:w-[700px] mx-auto rounded-2xl shadow-md transition-all">
         <CardHeader>
           <div className="flex items-start justify-between">
             <div className="space-y-2">
@@ -173,185 +198,175 @@ export default function CourseModule({
             </div>
             <Progress value={progressPercentage} className="h-2" />
           </div>
+
+          {/* AI Help Box always visible at top of card */}
+          {aiContext && <AskAIBox context={aiContext} />}
         </CardHeader>
 
         <Collapsible open={isExpanded} onOpenChange={setIsExpanded}>
           <CollapsibleContent>
             <CardContent className="space-y-6">
               {/* Simple Tabs Implementation */}
-              {(() => {
-                const tabList = [
-                  { value: "content", label: "Content" },
-                  { value: "activities", label: "Activities" },
-                  { value: "challenges", label: "Challenges" },
-                  { value: "resources", label: "Resources" },
-                ];
-                const [activeTab, setActiveTab] = useState("content");
-                return (
-                  <>
-                    <div className="grid w-full grid-cols-4 mb-4">
-                      {tabList.map(tab => (
-                        <button
-                          key={tab.value}
-                          className={`px-4 py-2 rounded-t ${activeTab === tab.value ? "bg-white font-bold" : "bg-gray-100"}`}
-                          onClick={() => setActiveTab(tab.value)}
-                          type="button"
-                        >
-                          {tab.label}
-                        </button>
-                      ))}
-                    </div>
-                    {/* Objective & Key Concepts */}
-                    {activeTab === "content" && (
-                      <div className="space-y-6">
-                        {/* Objective */}
-                        <Card>
-                          <CardHeader>
-                            <CardTitle className="flex items-center gap-2 text-lg">
-                              <Target className="h-5 w-5 text-blue-500" />
-                              Learning Objective
-                            </CardTitle>
-                          </CardHeader>
-                          <CardContent>
-                            <p className="text-muted-foreground">{objective}</p>
-                          </CardContent>
-                        </Card>
-                        {/* Key Concepts */}
-                        <Card>
-                          <CardHeader>
-                            <CardTitle className="flex items-center gap-2 text-lg">
-                              <BookOpen className="h-5 w-5 text-green-500" />
-                              Key Concepts
-                            </CardTitle>
-                          </CardHeader>
-                          <CardContent>
-                            <div className="space-y-3">
-                              {conceptsState.map((concept) => (
-                                <div key={concept.id} className="flex items-start gap-3 p-3 rounded-lg border">
-                                  <Checkbox
-                                    checked={concept.completed}
-                                    onCheckedChange={() => toggleConcept(concept.id)}
-                                    className="mt-0.5"
-                                  />
-                                  <div className="flex-1">
-                                    <p className={`${concept.completed ? "line-through text-muted-foreground" : ""}`}>
-                                      {concept.title}
-                                    </p>
-                                  </div>
-                                  {concept.completed && <CheckCircle2 className="h-4 w-4 text-green-500" />}
-                                </div>
-                              ))}
+              <div className="grid w-full grid-cols-4 mb-4">
+                {tabList.map(tab => (
+                  <button
+                    key={tab.value}
+                    className={`px-4 py-2 rounded-t ${activeTab === tab.value ? "bg-white font-bold" : "bg-gray-100"}`}
+                    onClick={() => setActiveTab(tab.value)}
+                    type="button"
+                  >
+                    {tab.label}
+                  </button>
+                ))}
+              </div>
+              {/* Objective & Key Concepts */}
+              {activeTab === "content" && (
+                <div className="space-y-6">
+                  {/* Objective */}
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2 text-lg">
+                        <Target className="h-5 w-5 text-blue-500" />
+                        Learning Objective
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="text-muted-foreground">{objective}</p>
+                    </CardContent>
+                  </Card>
+                  {/* Key Concepts */}
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2 text-lg">
+                        <BookOpen className="h-5 w-5 text-green-500" />
+                        Key Concepts
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-3">
+                        {conceptsState.map((concept) => (
+                          <div key={concept.id} className="flex items-start gap-3 p-3 rounded-lg border">
+                            <Checkbox
+                              checked={concept.completed}
+                              onCheckedChange={() => toggleConcept(concept.id)}
+                              className="mt-0.5"
+                            />
+                            <div className="flex-1">
+                              <p className={`${concept.completed ? "line-through text-muted-foreground" : ""}`}>
+                                {concept.title}
+                              </p>
                             </div>
-                          </CardContent>
-                        </Card>
+                            {concept.completed && <CheckCircle2 className="h-4 w-4 text-green-500" />}
+                          </div>
+                        ))}
                       </div>
-                    )}
-                    {/* Activities */}
-                    {activeTab === "activities" && (
-                      <div className="space-y-6">
-                        <Card>
-                          <CardHeader>
-                            <CardTitle className="flex items-center gap-2 text-lg">
-                              <Trophy className="h-5 w-5 text-yellow-500" />
-                              Activities
-                            </CardTitle>
-                          </CardHeader>
-                          <CardContent>
-                            <div className="space-y-4">
-                              {activitiesState.map((activity) => (
-                                <div key={activity.id} className="p-4 rounded-lg border space-y-3">
-                                  <div className="flex items-start gap-3">
-                                    <Checkbox
-                                      checked={activity.completed}
-                                      onCheckedChange={() => toggleActivity(activity.id)}
-                                      className="mt-0.5"
-                                    />
-                                    <div className="flex-1">
-                                      <h4 className="font-medium">{activity.title}</h4>
-                                      <p className="text-sm text-muted-foreground mt-1">{activity.description}</p>
-                                    </div>
-                                    {activity.completed && <CheckCircle2 className="h-4 w-4 text-green-500" />}
-                                  </div>
-                                  <Textarea
-                                    placeholder="Write your response here..."
-                                    value={activity.userResponse || ""}
-                                    onChange={(e) => updateActivityResponse(activity.id, e.target.value)}
-                                    className="min-h-[100px]"
-                                  />
-                                </div>
-                              ))}
+                    </CardContent>
+                  </Card>
+                </div>
+              )}
+              {/* Activities */}
+              {activeTab === "activities" && (
+                <div className="space-y-6">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2 text-lg">
+                        <Trophy className="h-5 w-5 text-yellow-500" />
+                        Activities
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-4">
+                        {activitiesState.map((activity) => (
+                          <div key={activity.id} className="p-4 rounded-lg border space-y-3">
+                            <div className="flex items-start gap-3">
+                              <Checkbox
+                                checked={activity.completed}
+                                onCheckedChange={() => toggleActivity(activity.id)}
+                                className="mt-0.5"
+                              />
+                              <div className="flex-1">
+                                <h4 className="font-medium">{activity.title}</h4>
+                                <p className="text-sm text-muted-foreground mt-1">{activity.description}</p>
+                              </div>
+                              {activity.completed && <CheckCircle2 className="h-4 w-4 text-green-500" />}
                             </div>
-                          </CardContent>
-                        </Card>
+                            <Textarea
+                              placeholder="Write your response here..."
+                              value={activity.userResponse || ""}
+                              onChange={(e) => updateActivityResponse(activity.id, e.target.value)}
+                              className="min-h-[100px]"
+                            />
+                          </div>
+                        ))}
                       </div>
-                    )}
-                    {/* Challenges */}
-                    {activeTab === "challenges" && (
-                      <div className="space-y-6">
-                        <Card>
-                          <CardHeader>
-                            <CardTitle className="flex items-center gap-2 text-lg">
-                              <Gamepad2 className="h-5 w-5 text-purple-500" />
-                              Challenges
-                            </CardTitle>
-                          </CardHeader>
-                          <CardContent>
-                            <div className="space-y-4">
-                              {challengesState.map((challenge) => (
-                                <div key={challenge.id} className="p-4 rounded-lg border space-y-3">
-                                  <div className="flex items-start gap-3">
-                                    <Checkbox
-                                      checked={challenge.completed}
-                                      onCheckedChange={() => toggleChallenge(challenge.id)}
-                                      className="mt-0.5"
-                                    />
-                                    <div className="flex-1">
-                                      <h4 className="font-medium">{challenge.question}</h4>
-                                    </div>
-                                    {challenge.completed && <CheckCircle2 className="h-4 w-4 text-green-500" />}
-                                  </div>
-                                  <Textarea
-                                    placeholder="Share your thoughts..."
-                                    value={challenge.userResponse || ""}
-                                    onChange={(e) => updateChallengeResponse(challenge.id, e.target.value)}
-                                    className="min-h-[80px]"
-                                  />
-                                </div>
-                              ))}
+                    </CardContent>
+                  </Card>
+                </div>
+              )}
+              {/* Challenges */}
+              {activeTab === "challenges" && (
+                <div className="space-y-6">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2 text-lg">
+                        <Gamepad2 className="h-5 w-5 text-purple-500" />
+                        Challenges
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-4">
+                        {challengesState.map((challenge) => (
+                          <div key={challenge.id} className="p-4 rounded-lg border space-y-3">
+                            <div className="flex items-start gap-3">
+                              <Checkbox
+                                checked={challenge.completed}
+                                onCheckedChange={() => toggleChallenge(challenge.id)}
+                                className="mt-0.5"
+                              />
+                              <div className="flex-1">
+                                <h4 className="font-medium">{challenge.question}</h4>
+                              </div>
+                              {challenge.completed && <CheckCircle2 className="h-4 w-4 text-green-500" />}
                             </div>
-                          </CardContent>
-                        </Card>
+                            <Textarea
+                              placeholder="Share your thoughts..."
+                              value={challenge.userResponse || ""}
+                              onChange={(e) => updateChallengeResponse(challenge.id, e.target.value)}
+                              className="min-h-[80px]"
+                            />
+                          </div>
+                        ))}
                       </div>
-                    )}
-                    {/* Extra Resources */}
-                    {activeTab === "resources" && (
-                      <div className="space-y-6">
-                        <Card>
-                          <CardHeader>
-                            <CardTitle className="flex items-center gap-2 text-lg">
-                              <Plus className="h-5 w-5 text-orange-500" />
-                              Extra Resources
-                            </CardTitle>
-                          </CardHeader>
-                          <CardContent>
-                            <div className="space-y-3">
-                              {extraResources.map((resource, index) => (
-                                <div
-                                  key={index}
-                                  className="flex items-center gap-3 p-3 rounded-lg border hover:bg-muted/50 cursor-pointer"
-                                >
-                                  <BookOpen className="h-4 w-4 text-muted-foreground" />
-                                  <span>{resource}</span>
-                                </div>
-                              ))}
-                            </div>
-                          </CardContent>
-                        </Card>
+                    </CardContent>
+                  </Card>
+                </div>
+              )}
+              {/* Extra Resources */}
+              {activeTab === "resources" && (
+                <div className="space-y-6">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2 text-lg">
+                        <Plus className="h-5 w-5 text-orange-500" />
+                        Extra Resources
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-3">
+                        {extraResources.map((resource, index) => (
+                          <div
+                            key={index}
+                            className="flex items-center gap-3 p-3 rounded-lg border hover:bg-muted/50 cursor-pointer"
+                          >
+                            <BookOpen className="h-4 w-4 text-muted-foreground" />
+                            <span>{resource}</span>
+                          </div>
+                        ))}
                       </div>
-                    )}
-                  </>
-                );
-              })()}
+                    </CardContent>
+                  </Card>
+                </div>
+              )}
               {/* Complete Module Button */}
               <div className="flex justify-center pt-4">
                 <Button onClick={handleCompleteModule} disabled={progressPercentage < 100} size="lg" className="px-8">

@@ -1,5 +1,5 @@
 export const metadata = {
-  title: "Kids Learn AI Business Adventure",
+  title: "LEARNI",
   description: "An engaging course for kids to learn about entrepreneurship and AI.",
 };
 
@@ -7,14 +7,14 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <head>
-        <link rel="icon" href="/appwrite.svg" />
+        <link rel="icon" href="/logo1.svg" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
         <link
           href="https://fonts.googleapis.com/css2?family=Fira+Code&family=Inter:opsz,wght@14..32,100..900&family=Poppins:wght@300;400&display=swap"
           rel="stylesheet"
         />
-        <link rel="icon" type="image/svg+xml" href="/appwrite.svg" />
+        <link rel="icon" type="image/svg+xml" href="/logo1.svg" />
       </head>
       <body className={"bg-[#FAFAFB] font-[Inter] text-sm text-[#56565C]"}>
         {children}

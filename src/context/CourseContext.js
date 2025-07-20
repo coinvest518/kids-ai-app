@@ -28,7 +28,7 @@ export function CourseProvider({ children }) {
       try {
         // Try to get Appwrite user
         const user = await account.get();
-        const doc = await databases.getDocument('user_data', 'progress', user.$id);
+        const doc = await databases.getDocument('687ce805001d6e9bc6c7', '687ce9cf0019368b4632', user.$id);
         if (doc && doc.data) {
           setState((prev) => ({ ...prev, ...doc.data }));
         }
@@ -64,8 +64,8 @@ export function CourseProvider({ children }) {
         try {
           const user = await account.get();
           await databases.updateDocument(
-            'user_data',
-            'progress',
+            '687ce805001d6e9bc6c7',
+            '687ce9cf0019368b4632',
             user.$id,
             {
               progress: state.progress,
@@ -81,8 +81,8 @@ export function CourseProvider({ children }) {
             try {
               const user = await account.get();
               await databases.createDocument(
-                'user_data',
-                'progress',
+                '687ce805001d6e9bc6c7',
+                '687ce9cf0019368b4632',
                 user.$id,
                 {
                   progress: state.progress,
@@ -119,7 +119,7 @@ export function CourseProvider({ children }) {
     setState((prev) => ({ ...prev, onboarding: answers }));
   };
 
-  const completeModule = (moduleId, xpEarned = 100) => {
+  const completeModule = async (moduleId, xpEarned = 100) => {
     setState((prev) => {
       const nextModule = moduleId + 1;
       const unlocked = prev.unlockedModules.includes(nextModule)
@@ -135,6 +135,43 @@ export function CourseProvider({ children }) {
         unlockedModules: unlocked,
       };
     });
+
+    // Also update Appwrite users collection for leaderboard
+    if (window.__isAppwriteUser) {
+      try {
+        const user = await account.get();
+        // Try to update user doc in 'users' collection
+        try {
+          await databases.updateDocument(
+            '687ce805001d6e9bc6c7', // Your DB ID
+            '687ce881002df232bfad', // Users collection ID
+            user.$id,
+            {
+              username: user.name || user.email || user.$id,
+              xp: state.xp + xpEarned,
+              level: Math.floor((state.xp + xpEarned) / 300) + 1,
+              badges: state.badges,
+            }
+          );
+        } catch (err) {
+          if (err.code === 404) {
+            // If not found, create it
+            await databases.createDocument(
+              '687ce805001d6e9bc6c7',
+              '687ce881002df232bfad',
+              user.$id,
+              {
+                username: user.name || user.email || user.$id,
+                xp: state.xp + xpEarned,
+                level: Math.floor((state.xp + xpEarned) / 300) + 1,
+                badges: state.badges,
+              },
+              [`user:${user.$id}`]
+            );
+          }
+        }
+      } catch (e) {/* ignore */}
+    }
   };
 
   const earnBadge = (badge) => {
