@@ -58,6 +58,7 @@ export default function AuthForm({ onAuth }) {
 
   return (
     <Card className="max-w-md mx-auto mt-12">
+      {/* Wallet login removed. Only email/password and magic link login remain. */}
       <CardHeader>
         <CardTitle>{mode === "login" ? "Login" : "Register"}</CardTitle>
       </CardHeader>

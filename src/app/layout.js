@@ -3,6 +3,8 @@ export const metadata = {
   description: "An engaging course for kids to learn about entrepreneurship and AI.",
 };
 
+
+
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
