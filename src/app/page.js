@@ -134,6 +134,17 @@ function MainApp() {
     checkSession();
   }, []);
 
+  // Register service worker for PWA
+  useEffect(() => {
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js').catch(err => {
+          console.error('Service Worker registration failed:', err);
+        });
+      });
+    }
+  }, []);
+
   const handleAuth = (userObj) => {
     setUser(userObj);
     setView((!state.onboarding || Object.keys(state.onboarding).length === 0) ? 'onboarding' : 'overview');
@@ -226,7 +237,3 @@ export default function AppWithProvider(props) {
     </CourseProvider>
   );
 }
-
-
-
-
