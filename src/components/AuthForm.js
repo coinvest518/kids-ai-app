@@ -87,25 +87,67 @@ export default function AuthForm({ onAuth }) {
           value={password}
           onChange={e => setPassword(e.target.value)}
         />
-        <Button onClick={mode === "login" ? handleLogin : handleRegister} disabled={loading} className="w-full">
-          {loading ? "Loading..." : mode === "login" ? "Login" : "Register"}
+        <Button
+          onClick={mode === "login" ? handleLogin : handleRegister}
+          disabled={loading}
+          className="w-full border-2 border-blue-400 focus:ring-2 focus:ring-blue-400 focus:outline-none hover:border-blue-600 transition font-semibold"
+          aria-label={mode === "login" ? "Login" : "Register"}
+          type="button"
+        >
+          {loading ? (
+            <span className="flex items-center justify-center gap-2">
+              <svg className="animate-spin h-5 w-5 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path></svg>
+              Loading...
+            </span>
+          ) : mode === "login" ? "Login" : "Register"}
         </Button>
         {mode === "login" && (
-          <Button onClick={handleMagicLink} disabled={loading || !email} variant="outline" className="w-full mt-2">
-            {loading ? "Sending..." : "Login with Magic Link"}
+          <Button
+            onClick={handleMagicLink}
+            disabled={loading || !email || magicSent}
+            variant="outline"
+            className={`w-full mt-2 border-2 border-purple-400 focus:ring-2 focus:ring-purple-400 focus:outline-none hover:border-purple-600 transition font-semibold ${magicSent ? 'opacity-60 cursor-not-allowed' : ''}`}
+            aria-label="Login with Magic Link"
+            type="button"
+          >
+            {loading ? (
+              <span className="flex items-center justify-center gap-2">
+                <svg className="animate-spin h-5 w-5 text-purple-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path></svg>
+                Sending...
+              </span>
+            ) : magicSent ? "Magic Link Sent" : "Login with Magic Link"}
           </Button>
         )}
-        {magicSent && <div className="text-green-600 text-center">Magic link sent! Check your email.</div>}
+        {magicSent && (
+          <div className="text-green-600 text-center mt-2 border border-green-300 rounded p-2 bg-green-50" role="status" tabIndex={0} aria-live="polite">
+            Magic link sent! Check your email (and spam folder).<br />
+            <span className="text-xs text-green-700">Click the link in your email to finish login.</span>
+          </div>
+        )}
         <div className="text-center mt-2">
           {mode === "login" ? (
             <span>
               New here?{' '}
-              <button className="text-blue-600 underline" onClick={() => setMode("register")}>Register</button>
+              <button
+                className="text-blue-600 underline border border-blue-200 rounded px-2 py-1 focus:ring-2 focus:ring-blue-400 focus:outline-none hover:bg-blue-50 transition"
+                onClick={() => setMode("register")}
+                type="button"
+                aria-label="Switch to Register"
+              >
+                Register
+              </button>
             </span>
           ) : (
             <span>
               Already have an account?{' '}
-              <button className="text-blue-600 underline" onClick={() => setMode("login")}>Login</button>
+              <button
+                className="text-blue-600 underline border border-blue-200 rounded px-2 py-1 focus:ring-2 focus:ring-blue-400 focus:outline-none hover:bg-blue-50 transition"
+                onClick={() => setMode("login")}
+                type="button"
+                aria-label="Switch to Login"
+              >
+                Login
+              </button>
             </span>
           )}
         </div>

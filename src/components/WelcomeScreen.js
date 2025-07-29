@@ -119,6 +119,13 @@ function InstallPWAButton() {
       deferredPrompt.prompt();
       const { outcome } = await deferredPrompt.userChoice;
       if (outcome === 'accepted') {
+        // Track successful install with Google Analytics
+        if (window.gtag) {
+          window.gtag('event', 'pwa_install', {
+            event_category: 'PWA',
+            event_label: 'Install Accepted',
+          });
+        }
         setDeferredPrompt(null);
       }
     } else {
